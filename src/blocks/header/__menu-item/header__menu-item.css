@@ -1,0 +1,16 @@
+.header__menu-item {
+    font-family: 'Inter', Arial, sans-serif;
+    margin-top: 15px;
+    margin-right: 24px;
+    color:#FFFFFF;
+    border: none;
+    text-decoration: none;
+  }
+
+  .header__menu-item:last-child {
+    margin-right: 0;
+  }
+
+  .header__menu-item:hover {
+    opacity: 0.6;
+}
