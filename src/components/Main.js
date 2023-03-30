@@ -13,17 +13,19 @@ function Main({
   handleCardLike,
   handleCardDelete,
   email,
-  onLogout
+  onLogout,
 }) {
   const currentUser = useContext(CurrentUserContext);
 
   return (
     <>
       <Header>
-        <p className="header__menu-item">{email}</p>
-        <button className="header__menu-item" onClick={onLogout}>
-          Выйти
-        </button>
+        <div>
+          <p className="header__menu-item header__menu-email">{email}</p>
+          <button className="header__menu-item" onClick={onLogout}>
+            Выйти
+          </button>
+        </div>
       </Header>
       <main className="page__content">
         <section className="profile page__profile">

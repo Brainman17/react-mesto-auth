@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import api from "../utils/Api";
 import "../../src/index.css";
 import Main from "./Main";
@@ -8,11 +8,14 @@ import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import ImagePopup from "./ImagePopup";
+import InfoTooltip from "./InfoTooltip";
 import { Register } from "./Register";
 import { Login } from "./Login";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import ProtectedRouteElement from "./ProtectedRoute";
 import * as Auth from "./Auth.js";
+import success from "../images/success.svg";
+import error from "../images/error.svg";
 
 function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
@@ -23,11 +26,13 @@ function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // const [info, setInfo] = useState({ image: "", text: "" });
-  const [email, setEmail] = useState({email: ""});
+  const [info, setInfo] = useState({ image: "", text: "" });
+  const [email, setEmail] = useState({ email: ""});
   const [loading, setLoading] = useState(true);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const navigate = useNavigate();
 
-  const cbLogin = useCallback( async ({ email, password }) => {
+  const cbLogin = useCallback(async ({ email, password }) => {
     try {
       const data = await Auth.authorize(email, password);
       if (!data) {
@@ -36,34 +41,51 @@ function App() {
       if (data.token !== undefined) {
         localStorage.setItem("jwt", data.token);
         setIsLoggedIn(true);
-        setEmail(data.email);
+        setEmail(email);
+        navigate("/");
       }
     } catch (e) {
       console.error(e);
+      setShowTooltip(true);
+      ChooseInfoTooltip({
+        image: error,
+        text: "Что-то пошло не так! Попробуйте еще раз!",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
-  const cbRegister = useCallback( async ({ email, password }) => {
+  const cbRegister = useCallback(async ({ email, password }) => {
     try {
       const data = await Auth.register(email, password);
       if (!data) {
         throw new Error("Ошибка регистрации");
       }
-      if (data.token !== undefined) {
-        localStorage.setItem("jwt", data.token);
+      if (data !== undefined) {
+        localStorage.setItem("jwt", data);
         setIsLoggedIn(true);
-        setEmail(data.email);
+        setEmail(email);
+        navigate("/sign-in");
+        setShowTooltip(true);
+        ChooseInfoTooltip({
+          image: success,
+          text: "Вы успешно зарегистрировались!",
+        });
       }
     } catch (e) {
       console.error(e);
+      setShowTooltip(true);
+      ChooseInfoTooltip({
+        image: error,
+        text: "Что-то пошло не так! Попробуйте еще раз!",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
-  const cbTokenCheck = useCallback( async () => {
+  const cbTokenCheck = useCallback(async () => {
     try {
       const jwt = localStorage.getItem("jwt");
       if (!jwt) {
@@ -76,11 +98,12 @@ function App() {
       }
 
       setIsLoggedIn(true);
-      setEmail(user);
+      setEmail(user.data.email);
+      navigate("/");
     } catch (e) {
       console.error(e);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }, []);
 
@@ -88,12 +111,12 @@ function App() {
     cbTokenCheck();
   }, []);
 
-
-  const cbLogout = useCallback (() => {
+  const cbLogout = useCallback(() => {
     setIsLoggedIn(false);
-    setEmail({email: ''})
+    setEmail({ email: "" });
+    navigate("/sign-in");
     localStorage.removeItem("jwt");
-  }, [])
+  }, []);
 
   useEffect(() => {
     api
@@ -113,9 +136,9 @@ function App() {
       .catch(console.log);
   }, []);
 
-  // function ChooseInfoTooltip (info) {
-  //   setInfo({ image: info.image, text: info.text });
-  // }
+  function ChooseInfoTooltip(info) {
+    setInfo({ image: info.image, text: info.text });
+  }
 
   function handleCardDelete(card) {
     api
@@ -219,10 +242,11 @@ function App() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setSelectedCard({});
+    setShowTooltip(false);
   }
 
-  if(loading) {
-    return 'Loading...'
+  if (loading) {
+    return "Loading...";
   }
 
   return (
@@ -250,17 +274,8 @@ function App() {
               ></ProtectedRouteElement>
             }
           />
-          <Route
-            path="/signup"
-            element={
-              <Register isLoggedIn={isLoggedIn} onRegister={cbRegister} />
-            }
-          />
-          <Route
-            path="/signin"
-            element={<Login isLoggedIn={isLoggedIn} onLogin={cbLogin} />}
-          />
-          {isLoggedIn && (<Navigate from="/" to="/signin" exact/> )}
+          <Route path="/sign-up" element={<Register onRegister={cbRegister} />} />
+          <Route path="/sign-in" element={<Login onLogin={cbLogin} />} />
         </Routes>
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
         <EditProfilePopup
@@ -282,6 +297,11 @@ function App() {
           isLoading={isLoading}
         />
         <PopupWithForm title="Вы уверены?" name="delete" buttonText="Да" />
+        <InfoTooltip
+          isOpen={showTooltip}
+          onClose={closeAllPopups}
+          info={info}
+        />
       </div>
     </CurrentUserContext.Provider>
   );

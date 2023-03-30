@@ -1,10 +1,10 @@
 .header__menu-item {
+    all: unset;
     font-family: 'Inter', Arial, sans-serif;
     margin-top: 15px;
     margin-right: 24px;
     color:#FFFFFF;
     border: none;
-    text-decoration: none;
   }
 
   .header__menu-item:last-child {
@@ -13,4 +13,5 @@
 
   .header__menu-item:hover {
     opacity: 0.6;
+    cursor: pointer;
 }

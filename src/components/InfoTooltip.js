@@ -1,15 +1,15 @@
-function InfoToolTip({ isOpen, onClose, info }) {
+function InfoTooltip({ isOpen, onClose, info }) {
 
   return (
     <section className={`popup ${isOpen ? "popup_opened" : ""}`}>
       <div className="popup__container">
-        <div>
+        <div className="popup__infoTooltip-wrap">
           <img
-            className="popup__infoToolTip-image"
+            className="popup__infoTooltip-image"
             src={info.image}
             alt={info.text}
           />
-          <p className="popup__infoToolTip-text">{info.text}</p>
+          <p className="popup__infoTooltip-text">{info.text}</p>
         </div>
         <button
           className={"popup__close-button"}
@@ -21,4 +21,4 @@ function InfoToolTip({ isOpen, onClose, info }) {
   );
 }
 
-export default InfoToolTip;
+export default InfoTooltip;
