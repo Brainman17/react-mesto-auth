@@ -57,15 +57,9 @@ function App() {
   }, []);
 
   const cbRegister = useCallback(async ({ email, password }) => {
+    const data = await Auth.register(email, password);
     try {
-      const data = await Auth.register(email, password);
-      if (!data) {
-        throw new Error("Ошибка регистрации");
-      }
       if (data !== undefined) {
-        localStorage.setItem("jwt", data);
-        setIsLoggedIn(true);
-        setEmail(email);
         navigate("/sign-in");
         setShowTooltip(true);
         ChooseInfoTooltip({
@@ -74,12 +68,12 @@ function App() {
         });
       }
     } catch (e) {
-      console.error(e);
-      setShowTooltip(true);
-      ChooseInfoTooltip({
-        image: error,
-        text: "Что-то пошло не так! Попробуйте еще раз!",
-      });
+        console.error(e);
+        setShowTooltip(true);
+        ChooseInfoTooltip({
+          image: error,
+          text: "Что-то пошло не так! Попробуйте еще раз!",
+        });
     } finally {
       setLoading(false);
     }
