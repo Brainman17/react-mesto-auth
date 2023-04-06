@@ -60,7 +60,7 @@ function App() {
     try {
       const data = await Auth.register(email, password);
 
-      if (!data.error || data !== undefined) {
+      if (!data.error && data !== undefined) {
         navigate("/sign-in");
         setShowTooltip(true);
         ChooseInfoTooltip({
@@ -80,7 +80,7 @@ function App() {
       setLoading(false);
     }
   }, []);
-
+  
   const cbTokenCheck = useCallback(async () => {
     try {
       const jwt = localStorage.getItem("jwt");

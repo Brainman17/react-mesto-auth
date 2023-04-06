@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useFormAndValidation } from "../hooks/useFormAndValidation";
+// import { useFormAndValidation } from "../hooks/useFormAndValidation";
 import PopupWithForm from "./PopupWithForm";
 
 function AddPlacePopup({ isOpen, onClose, onAddPlace, isLoading }) {
   const [name, setName] = useState("");
   const [link, setLink] = useState("");
 
-  const {values, handleChange, errors, isValid, setValues, resetForm} = useFormAndValidation()
+  // const {values, handleChange, errors, isValid, setValues, resetForm} = useFormAndValidation();
 
 
   function handleChangeName(e) {
