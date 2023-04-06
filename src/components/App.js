@@ -56,19 +56,21 @@ function App() {
     }
   }, []);
 
-  const cbRegister = useCallback(async ({ email, password }) => {
-    const data = await Auth.register(email, password);
+  const cbRegister = useCallback(async ({ email, password }) => {   
     try {
-      if (data !== undefined) {
+      const data = await Auth.register(email, password);
+
+      if (!data.error || data !== undefined) {
         navigate("/sign-in");
         setShowTooltip(true);
         ChooseInfoTooltip({
           image: success,
           text: "Вы успешно зарегистрировались!",
         });
+      } else {
+        throw new Error(data.error)
       }
     } catch (e) {
-        console.error(e);
         setShowTooltip(true);
         ChooseInfoTooltip({
           image: error,
